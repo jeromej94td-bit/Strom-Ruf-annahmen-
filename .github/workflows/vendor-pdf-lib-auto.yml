@@ -1,0 +1,26 @@
+name: Install local PDF library
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-pdf-lib-auto.yml
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download library
+        run: |
+          mkdir -p vendor
+          curl -L --fail --retry 3 https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js -o vendor/pdf-lib.min.js
+      - name: Change page to local library
+        run: |
+          sed -i 's#https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js#vendor/pdf-lib.min.js#' index.html
+      - name: Save fix
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html vendor/pdf-lib.min.js
+          git commit -m 'Use local PDF library'
+          git push
