@@ -1,154 +1,60 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Dokument digital ausfüllen und unterschreiben</title>
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-  <style>
-    :root{--green:#15803d;--green2:#16a34a;--ink:#18302a;--muted:#65736f;--bg:#f1f8f3;--card:#fff;--line:#d9e7dd;--bad:#b42318;--shadow:0 18px 50px rgba(20,74,44,.10)}
-    *{box-sizing:border-box} body{margin:0;background:linear-gradient(150deg,#e9f7ed,#f8fbf9 45%,#edf8f1);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
-    button,input,textarea,select{font:inherit}.app{width:min(860px,100%);margin:auto;padding:28px 16px 64px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}.logo{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;color:white;font-size:24px;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 8px 20px rgba(22,163,74,.25)}
-    h1{font-size:clamp(24px,5vw,38px);line-height:1.08;margin:0}.lead{margin:8px 0 0;color:var(--muted);font-size:15px}.privacy{display:flex;gap:8px;align-items:flex-start;background:#eaf7ee;color:#24623a;border:1px solid #cbe8d3;border-radius:12px;padding:11px 13px;font-size:13px;margin:18px 0}
-    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:18px 0}.step{height:7px;border-radius:8px;background:#dce8df}.step.on{background:var(--green2)}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,4vw,30px);box-shadow:var(--shadow)}.screen{display:none}.screen.active{display:block}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}h2{font-size:24px;margin:6px 0 8px}.hint{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 20px}
-    .types{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.type{position:relative;text-align:left;border:1.5px solid var(--line);background:#fbfdfb;border-radius:16px;padding:18px;cursor:pointer;min-height:145px;color:var(--ink)}.type:hover,.type.selected{border-color:var(--green2);background:#f0faf3}.type .icon{font-size:28px}.type strong{display:block;margin:10px 0 5px}.type span{font-size:12.5px;color:var(--muted);line-height:1.4}.type .check{display:none;position:absolute;right:12px;top:12px;background:var(--green2);color:white;border-radius:50%;width:22px;height:22px;text-align:center}.type.selected .check{display:block}
-    .upload{border:2px dashed #bcd8c5;border-radius:16px;margin-top:18px;padding:22px;text-align:center;background:#f8fcf9}.upload input{width:100%;max-width:450px}.file-name{color:var(--green);font-weight:700;font-size:13px;margin-top:10px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:750;margin:0 0 6px}input,textarea{width:100%;border:1px solid #cfded3;border-radius:12px;background:#fbfdfb;padding:12px 13px;color:var(--ink)}textarea{min-height:84px;resize:vertical}input:focus,textarea:focus{outline:3px solid rgba(22,163,74,.13);border-color:var(--green2)}
-    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:800;cursor:pointer}.btn.primary{background:linear-gradient(135deg,var(--green2),var(--green));color:white;box-shadow:0 8px 18px rgba(22,163,74,.22)}.btn.secondary{background:#edf4ef;color:var(--ink)}.btn.danger{background:#fff0ee;color:var(--bad)}.btn:disabled{opacity:.4;cursor:not-allowed}.error{display:none;color:var(--bad);background:#fff2f0;border:1px solid #ffd3cd;padding:10px 12px;border-radius:10px;font-size:13px;margin-top:12px}.error.show{display:block}
-    .sign-area{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}.sign-head{padding:12px 14px;background:#f4faf6;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}#signature{display:block;width:100%;height:250px;touch-action:none;cursor:crosshair;background:linear-gradient(to bottom,transparent calc(100% - 55px),#cbd5ce calc(100% - 54px),transparent calc(100% - 53px))}.sign-tools{display:flex;justify-content:flex-end;padding:10px;background:#fafcfb}
-    .summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.summary div{background:#f5faf6;border:1px solid var(--line);border-radius:12px;padding:12px}.summary small{display:block;color:var(--muted);margin-bottom:4px}.summary strong{font-size:14px}.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;margin-top:18px}.consent input{width:auto;margin-top:3px}.done-mark{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#dff5e5;color:var(--green);font-size:38px;margin:2px auto 16px}.center{text-align:center}.download{display:inline-flex;text-decoration:none}.preview{width:100%;height:520px;border:1px solid var(--line);border-radius:14px;margin-top:18px;background:#eee}.completed{margin-top:18px;text-align:left}.completed-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding:12px 0;font-size:13px}.pill{color:var(--green);font-weight:800;background:#e8f7ec;border-radius:99px;padding:4px 9px}
-    .busy{display:none;position:fixed;inset:0;z-index:20;background:rgba(240,248,243,.88);backdrop-filter:blur(3px);place-items:center}.busy.show{display:grid}.spinner{width:48px;height:48px;border:5px solid #cde7d5;border-top-color:var(--green2);border-radius:50%;animation:spin .8s linear infinite;margin:auto}@keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:650px){.types{grid-template-columns:1fr}.type{min-height:auto}.fields,.summary{grid-template-columns:1fr}.field.full{grid-column:auto}.actions{flex-direction:column-reverse}.btn{width:100%}.preview{height:430px}.app{padding-top:18px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dokument digital unterschreiben</title>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(145deg,#e9f7ed,#f8fbf9);font-family:Arial,sans-serif;color:#18302a}.app{width:min(760px,100%);margin:auto;padding:24px 16px 60px}.brand{display:flex;gap:12px;align-items:center;margin-bottom:20px}.logo{width:46px;height:46px;border-radius:14px;background:#16a34a;color:white;display:grid;place-items:center;font-size:24px}h1{margin:0;font-size:30px}.lead,.hint{color:#65736f;line-height:1.5}.card{background:white;border:1px solid #d9e7dd;border-radius:22px;padding:24px;box-shadow:0 18px 50px rgba(20,74,44,.1)}.screen{display:none}.screen.active{display:block}.types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.type{border:1px solid #d9e7dd;background:#fbfdfb;border-radius:14px;padding:16px;cursor:pointer}.type.selected{border:2px solid #16a34a;background:#effaf2}.upload{margin-top:18px;padding:18px;border:2px dashed #bcd8c5;border-radius:14px;background:#f8fcf9}.upload input{width:100%}.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;cursor:pointer}.primary{background:#16a34a;color:white}.secondary{background:#edf4ef}.danger{background:#fff0ee;color:#b42318}.btn:disabled{opacity:.4}.signbox{border:1px solid #d9e7dd;border-radius:14px;overflow:hidden}canvas{display:block;width:100%;height:260px;touch-action:none;background:white}.status{margin-top:14px;min-height:22px;color:#b42318}.done{color:#15803d}.busy{display:none;position:fixed;inset:0;background:rgba(255,255,255,.88);place-items:center}.busy.show{display:grid}@media(max-width:650px){.types{grid-template-columns:1fr}.actions{flex-direction:column}.btn{width:100%}}
+</style>
 </head>
 <body>
 <main class="app">
-  <div class="brand"><div class="logo">✓</div><div><h1>Dokument digital erledigen</h1><p class="lead">Ausfüllen, mit dem Finger unterschreiben und als fertige PDF speichern.</p></div></div>
-  <div class="privacy">🔒 <span>Ihre Angaben und Unterschrift bleiben auf diesem Gerät. Es wird nichts an einen Server übertragen.</span></div>
-  <div class="steps" aria-label="Fortschritt"><i class="step on"></i><i class="step"></i><i class="step"></i><i class="step"></i></div>
-
-  <section class="card screen active" id="chooseScreen">
-    <div class="eyebrow">Schritt 1</div><h2>Welches Dokument haben Sie erhalten?</h2><p class="hint">Wählen Sie den Dokumenttyp und anschließend die zugehörige PDF-Datei aus.</p>
-    <div class="types">
-      <button class="type" data-type="angebot"><b class="check">✓</b><b class="icon">📄</b><strong>Angebot</strong><span>Das Angebot bleibt unverändert. Nur die Unterschrift wird auf der vorgesehenen Linie eingesetzt.</span></button>
-      <button class="type" data-type="sepa"><b class="check">✓</b><b class="icon">🏦</b><strong>SEPA-Mandat</strong><span>Bank, Kontoinhaber, IBAN, Ort, Datum und Unterschrift ausfüllen.</span></button>
-      <button class="type" data-type="vollmacht"><b class="check">✓</b><b class="icon">✍️</b><strong>Vollmacht</strong><span>Datum und Unterschrift direkt in die Vollmacht einsetzen.</span></button>
-    </div>
-    <div class="upload"><label for="pdfFile">PDF-Datei auswählen</label><input id="pdfFile" type="file" accept="application/pdf,.pdf"><div class="file-name" id="fileName"></div></div>
-    <div class="error" id="chooseError"></div><div class="actions"><button class="btn primary" id="toForm" disabled>Weiter</button></div>
-  </section>
-
-  <section class="card screen" id="formScreen">
-    <div class="eyebrow">Schritt 2</div><h2 id="formTitle">Angaben ergänzen</h2><p class="hint" id="formHint"></p>
-    <div class="fields" id="sepaFields">
-      <div class="field"><label for="bankName">Name Ihrer Bank</label><input id="bankName" autocomplete="organization" placeholder="z. B. Sparkasse Berlin"></div>
-      <div class="field full"><label for="holder">Name und Anschrift des Kontoinhabers</label><textarea id="holder" autocomplete="name" placeholder="Vorname Nachname / Firma, Straße Hausnummer, PLZ Ort"></textarea></div>
-      <div class="field full"><label for="iban">IBAN</label><input id="iban" inputmode="text" autocomplete="off" placeholder="DE00 0000 0000 0000 0000 00"></div>
-    </div>
-    <div class="fields" id="commonFields"><div class="field" id="placeField"><label for="place">Ort</label><input id="place" autocomplete="address-level2" placeholder="z. B. Berlin"></div><div class="field"><label for="date">Datum</label><input id="date" type="text" inputmode="numeric" placeholder="TT.MM.JJJJ"></div></div>
-    <div class="error" id="formError"></div><div class="actions"><button class="btn secondary" data-back="chooseScreen">Zurück</button><button class="btn primary" id="toSign">Zur Unterschrift</button></div>
-  </section>
-
-  <section class="card screen" id="signScreen">
-    <div class="eyebrow">Schritt 3</div><h2>Bitte unterschreiben</h2><p class="hint">Unterschreiben Sie mit dem Finger oder der Maus im weißen Feld.</p>
-    <div class="sign-area"><div class="sign-head" id="signLabel">Unterschrift</div><canvas id="signature"></canvas><div class="sign-tools"><button class="btn danger" id="clearSign">Unterschrift löschen</button></div></div>
-    <label class="consent"><input type="checkbox" id="consent"><span>Ich bestätige, dass ich dieses Dokument selbst ausfülle und die Unterschrift verbindlich in die ausgewählte PDF eingefügt werden darf.</span></label>
-    <div class="error" id="signError"></div><div class="actions"><button class="btn secondary" data-back="formScreen">Zurück</button><button class="btn primary" id="createPdf">Fertige PDF erstellen</button></div>
-  </section>
-
-  <section class="card screen center" id="doneScreen">
-    <div class="done-mark">✓</div><div class="eyebrow">Dokument fertig</div><h2>Ihre ausgefüllte PDF ist erstellt</h2><p class="hint">Speichern Sie die Datei jetzt auf Ihrem Gerät. Danach können Sie bei Bedarf ein weiteres Dokument bearbeiten.</p>
-    <div class="summary"><div><small>Dokument</small><strong id="doneType"></strong></div><div><small>Fertiggestellt</small><strong id="doneDate"></strong></div></div>
-    <div class="actions" style="justify-content:center"><a class="btn primary download" id="downloadPdf">PDF herunterladen</a><button class="btn secondary" id="anotherDoc">Weiteres Dokument</button></div>
-    <iframe class="preview" id="pdfPreview" title="Vorschau der fertigen PDF"></iframe>
-    <div class="completed" id="completedList"></div>
-  </section>
+<div class="brand"><div class="logo">✓</div><div><h1>Dokument digital erledigen</h1><div class="lead">PDF auswählen, unterschreiben und fertigstellen.</div></div></div>
+<section class="card screen active" id="choose">
+<h2>1. Dokument auswählen</h2>
+<div class="types">
+<button class="type" data-type="angebot">📄<br><b>Angebot</b></button>
+<button class="type" data-type="sepa">🏦<br><b>SEPA-Mandat</b></button>
+<button class="type" data-type="vollmacht">✍️<br><b>Vollmacht</b></button>
+</div>
+<div class="upload"><input id="pdfFile" type="file" accept="application/pdf,.pdf"><div id="fileName"></div></div>
+<div class="actions"><button class="btn primary" id="next" disabled>Weiter</button></div>
+<div class="status" id="chooseStatus"></div>
+</section>
+<section class="card screen" id="sign">
+<h2>2. Unterschreiben</h2><p class="hint">Mit Finger oder Maus im Feld unterschreiben.</p>
+<div class="signbox"><canvas id="signature"></canvas></div>
+<div class="actions"><button class="btn danger" id="clear">Löschen</button><button class="btn secondary" id="back">Zurück</button><button class="btn primary" id="create">Fertige PDF erstellen</button></div>
+<div class="status" id="signStatus"></div>
+</section>
+<section class="card screen" id="done">
+<h2>✓ Dokument fertig</h2><p class="done">Die PDF wurde erstellt und in Supabase gespeichert.</p>
+<div class="actions"><a class="btn primary" id="download">PDF herunterladen</a><button class="btn secondary" id="again">Weiteres Dokument</button></div>
+</section>
 </main>
-
-<div class="busy" id="busy"><div><div class="spinner"></div><p>PDF wird erstellt …</p></div></div>
-
+<div class="busy" id="busy"><h2>PDF wird erstellt …</h2></div>
 <script>
-(() => {
-  'use strict';
-  const $ = id => document.getElementById(id);
-  const typeLabels = { angebot:'Angebot', sepa:'SEPA-Mandat', vollmacht:'Vollmacht' };
-  const screens = ['chooseScreen','formScreen','signScreen','doneScreen'];
-  const state = { type:null, file:null, signature:null, completed:[], previewUrl:null };
-  const coords = {
-    angebot:{page:0,signature:{x:568,y:53,w:120,h:32}},
-    sepa:{page:0,bank:{x:66,y:535,w:225,size:9},holder:{x:307,y:535,w:220,size:8.5},iban:{x:307,y:491,w:220,size:10},date:{x:66,y:147,size:9},signature:{x:320,y:145,w:200,h:24}},
-    vollmacht:{page:0,date:{x:214,y:90,size:9},signature:{x:320,y:92,w:160,h:30}}
-  };
-  const canvas = $('signature'), ctx = canvas.getContext('2d'); let drawing=false,last=null,hasInk=false;
-
-  function today(){ return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date()); }
-  function show(id){ screens.forEach(x=>$(x).classList.toggle('active',x===id)); const n=screens.indexOf(id); document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i<=n)); window.scrollTo({top:0,behavior:'smooth'}); }
-  function error(id,msg=''){ $(id).textContent=msg; $(id).classList.toggle('show',!!msg); }
-  function cleanText(value){ return String(value||'').replace(/[\u0000-\u001f]/g,' ').trim(); }
-  function formatIban(v){ return v.replace(/\s+/g,'').toUpperCase().replace(/(.{4})/g,'$1 ').trim(); }
-  function detectType(name){ const n=name.toLowerCase(); return n.includes('sepa')?'sepa':n.includes('vollmacht')?'vollmacht':n.includes('angebot')?'angebot':null; }
-  function selectType(type){ state.type=type; document.querySelectorAll('.type').forEach(b=>b.classList.toggle('selected',b.dataset.type===type)); validateChoose(); }
-  document.querySelectorAll('.type').forEach(b=>b.addEventListener('click',()=>selectType(b.dataset.type)));
-  $('pdfFile').addEventListener('change',e=>{ state.file=e.target.files[0]||null; $('fileName').textContent=state.file?state.file.name:''; if(state.file&&!state.type){ const d=detectType(state.file.name); if(d) selectType(d); } validateChoose(); });
-  function validateChoose(){ $('toForm').disabled=!(state.type&&state.file); }
-  $('toForm').addEventListener('click',()=>{
-    if(!state.file||state.file.type!=='application/pdf'&&!state.file.name.toLowerCase().endsWith('.pdf')) return error('chooseError','Bitte wählen Sie eine PDF-Datei aus.');
-    error('chooseError'); $('date').value=today(); const sepa=state.type==='sepa', vollmacht=state.type==='vollmacht';
-    $('sepaFields').style.display=sepa?'grid':'none'; $('commonFields').style.display=state.type==='angebot'?'none':'grid'; $('placeField').style.display=sepa?'block':'none';
-    $('formTitle').textContent=sepa?'SEPA-Angaben ergänzen':state.type==='angebot'?'Angebot bestätigen':'Vollmacht bestätigen';
-    $('formHint').textContent=sepa?'Der BIC wird nicht benötigt. Bitte tragen Sie nur die folgenden Angaben ein.':state.type==='angebot'?'Am Angebot selbst wird nichts geändert. Im nächsten Schritt wird nur Ihre Unterschrift direkt auf der vorgesehenen Linie eingesetzt.':'In die Vollmacht werden nur das heutige Datum und Ihre Unterschrift eingesetzt.';
-    if(vollmacht) $('place').value=''; show('formScreen');
-  });
-  document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));
-  $('iban').addEventListener('input',e=>e.target.value=formatIban(e.target.value));
-  $('toSign').addEventListener('click',()=>{
-    const required = state.type==='sepa' ? [['bankName','Name Ihrer Bank'],['holder','Name und Anschrift des Kontoinhabers'],['iban','IBAN'],['place','Ort'],['date','Datum']] : state.type==='angebot' ? [] : [['date','Datum']];
-    const missing=required.find(([id])=>!$(id).value.trim()); if(missing) return error('formError',`Bitte füllen Sie „${missing[1]}“ aus.`);
-    if(state.type==='sepa' && $('iban').value.replace(/\s/g,'').length<15) return error('formError','Bitte prüfen Sie die IBAN.');
-    error('formError'); $('signLabel').textContent=`Unterschrift für ${typeLabels[state.type]}`; show('signScreen'); requestAnimationFrame(sizeCanvas);
-  });
-
-  function sizeCanvas(){ const r=canvas.getBoundingClientRect(),d=window.devicePixelRatio||1; canvas.width=Math.max(1,r.width*d);canvas.height=Math.max(1,r.height*d);ctx.setTransform(d,0,0,d,0,0);ctx.strokeStyle='#143b2b';ctx.lineWidth=2.7;ctx.lineCap='round';ctx.lineJoin='round';hasInk=false; }
-  function pos(e){ const r=canvas.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}; }
-  function start(e){e.preventDefault();drawing=true;last=pos(e);hasInk=true} function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p} function end(){drawing=false}
-  canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end);
-  $('clearSign').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasInk=false});
-
-  function trimmedSignature(){
-    const w=canvas.width,h=canvas.height,data=ctx.getImageData(0,0,w,h).data;let minX=w,minY=h,maxX=0,maxY=0,found=false;
-    for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2)if(data[(y*w+x)*4+3]>10){found=true;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y)}
-    if(!found)return null;const pad=10,x=Math.max(0,minX-pad),yy=Math.max(0,minY-pad),ww=Math.min(w,maxX+pad)-x,hh=Math.min(h,maxY+pad)-yy,out=document.createElement('canvas');out.width=ww;out.height=hh;out.getContext('2d').drawImage(canvas,x,yy,ww,hh,0,0,ww,hh);return out.toDataURL('image/png');
-  }
-  async function bytesFromDataUrl(url){ return Uint8Array.from(atob(url.split(',')[1]),c=>c.charCodeAt(0)); }
-  function wrap(text,maxChars){ const lines=[]; String(text).split(/\n/).forEach(part=>{let line='';part.split(/\s+/).forEach(word=>{if((line+' '+word).trim().length>maxChars&&line){lines.push(line);line=word}else line=(line+' '+word).trim()});if(line)lines.push(line)});return lines.slice(0,4); }
-  function drawWrapped(page,text,box,font,color){ wrap(cleanText(text),Math.max(18,Math.floor(box.w/(box.size*.48)))).forEach((line,i)=>page.drawText(line,{x:box.x,y:box.y-i*(box.size+2),size:box.size,font,color,maxWidth:box.w})); }
-  async function uploadToAnnahmen(blob,filename){
-    const form=new FormData();form.append('file',blob,filename);
-    const res=await fetch('https://yepluyipizbbrgoffqdq.supabase.co/functions/v1/annahme-upload',{method:'POST',body:form});
-    let body={};try{body=await res.json()}catch(_e){}
-    if(!res.ok||!body.ok)throw new Error(body.error||'Das Dokument konnte nicht gespeichert werden.');
-  }
-  async function generatePdf(){
-    if(!hasInk)return error('signError','Bitte unterschreiben Sie zuerst im Feld.'); if(!$('consent').checked)return error('signError','Bitte bestätigen Sie die Einwilligung unter dem Unterschriftsfeld.');
-    error('signError');$('busy').classList.add('show');
-    try{
-      if(!window.PDFLib)throw new Error('Die PDF-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen.');
-      const input=new Uint8Array(await state.file.arrayBuffer()),pdf=await PDFLib.PDFDocument.load(input,{ignoreEncryption:true}),page=pdf.getPage(coords[state.type].page),font=await pdf.embedFont(PDFLib.StandardFonts.Helvetica),color=PDFLib.rgb(.05,.12,.09),cfg=coords[state.type];
-      if(state.type==='sepa'){drawWrapped(page,$('bankName').value,cfg.bank,font,color);drawWrapped(page,$('holder').value,cfg.holder,font,color);page.drawText(cleanText($('iban').value),{...cfg.iban,font,color,maxWidth:cfg.iban.w});page.drawText(`${cleanText($('place').value)}, ${cleanText($('date').value)}`,{...cfg.date,font,color});}
-      if(state.type==='vollmacht')page.drawText(cleanText($('date').value),{...cfg.date,font,color});
-      const sigData=trimmedSignature(),sig=await pdf.embedPng(await bytesFromDataUrl(sigData)),dims=sig.scale(1),scale=Math.min(cfg.signature.w/dims.width,cfg.signature.h/dims.height),w=dims.width*scale,h=dims.height*scale;
-      page.drawImage(sig,{x:cfg.signature.x+(cfg.signature.w-w)/2,y:cfg.signature.y,w,h});
-      const output=await pdf.save(),blob=new Blob([output],{type:'application/pdf'}),url=URL.createObjectURL(blob),base=state.file.name.replace(/\.pdf$/i,'');
-      if(state.previewUrl)URL.revokeObjectURL(state.previewUrl);state.previewUrl=url;const filename=`${base}-ausgefuellt.pdf`;
-      await uploadToAnnahmen(blob,filename);
-      state.completed.push({type:typeLabels[state.type],filename,url,finished:new Date().toLocaleString('de-DE')});
-      $('downloadPdf').href=url;$('downloadPdf').download=filename;$('pdfPreview').src=url;$('doneType').textContent=typeLabels[state.type];$('doneDate').textContent=new Date().toLocaleString('de-DE');renderCompleted();show('doneScreen');
-    }catch(e){error('signError',e.message||'Die PDF konnte nicht erstellt werden.');}finally{$('busy').classList.remove('show')}
-  }
-  $('createPdf').addEventListener('click',generatePdf);
-  function renderCompleted(){ $('completedList').innerHTML='<h3>In dieser Sitzung fertiggestellt</h3>'+state.completed.map((d,i)=>`<div class="completed-row"><span><b>${d.type}</b><br>${d.filename}</span><a class="pill" href="${d.url}" download="${d.filename}">PDF speichern</a></div>`).join(''); }
-  $('anotherDoc').addEventListener('click',()=>{state.type=null;state.file=null;state.signature=null;$('pdfFile').value='';$('fileName').textContent='';document.querySelectorAll('.type').forEach(b=>b.classList.remove('selected'));['bankName','holder','iban','place'].forEach(id=>$(id).value='');$('date').value=today();$('consent').checked=false;$('toForm').disabled=true;show('chooseScreen')});
-  $('date').value=today();
+(()=>{
+const $=id=>document.getElementById(id),state={type:null,file:null};
+const coords={angebot:{page:0,signature:{x:568,y:53,w:120,h:32}},sepa:{page:0,signature:{x:320,y:145,w:200,h:24}},vollmacht:{page:0,signature:{x:320,y:92,w:160,h:30}}};
+const canvas=$('signature'),ctx=canvas.getContext('2d');let drawing=false,last=null,hasInk=false;
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
+function resize(){const r=canvas.getBoundingClientRect(),d=devicePixelRatio||1;canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);ctx.strokeStyle='#143b2b';ctx.lineWidth=2.7;ctx.lineCap='round';hasInk=false}
+function p(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();drawing=true;last=p(e);hasInk=true});
+canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const q=p(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(q.x,q.y);ctx.stroke();last=q});
+addEventListener('pointerup',()=>drawing=false);
+$('clear').onclick=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasInk=false};
+document.querySelectorAll('.type').forEach(b=>b.onclick=()=>{state.type=b.dataset.type;document.querySelectorAll('.type').forEach(x=>x.classList.toggle('selected',x===b));$('next').disabled=!(state.type&&state.file)});
+$('pdfFile').onchange=e=>{state.file=e.target.files[0]||null;$('fileName').textContent=state.file?state.file.name:'';$('next').disabled=!(state.type&&state.file)};
+$('next').onclick=()=>{if(!state.file)return;show('sign');requestAnimationFrame(resize)};
+$('back').onclick=()=>show('choose');
+function trim(){const w=canvas.width,h=canvas.height,d=ctx.getImageData(0,0,w,h).data;let minX=w,minY=h,maxX=0,maxY=0,found=false;for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2)if(d[(y*w+x)*4+3]>10){found=true;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y)}if(!found)return null;const pad=10,x=Math.max(0,minX-pad),y=Math.max(0,minY-pad),ww=Math.min(w,maxX+pad)-x,hh=Math.min(h,maxY+pad)-y,o=document.createElement('canvas');o.width=ww;o.height=hh;o.getContext('2d').drawImage(canvas,x,y,ww,hh,0,0,ww,hh);return o.toDataURL('image/png')}
+async function upload(blob,name){const f=new FormData();f.append('file',blob,name);const r=await fetch('https://yepluyipizbbrgoffqdq.supabase.co/functions/v1/annahme-upload',{method:'POST',body:f});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||'Upload fehlgeschlagen')}
+$('create').onclick=async()=>{if(!hasInk){$('signStatus').textContent='Bitte zuerst unterschreiben.';return}if(!window.PDFLib){$('signStatus').textContent='PDF-Bibliothek wurde nicht geladen. Bitte Seite neu laden.';return}$('busy').classList.add('show');$('signStatus').textContent='';try{const input=new Uint8Array(await state.file.arrayBuffer()),pdf=await PDFLib.PDFDocument.load(input,{ignoreEncryption:true}),cfg=coords[state.type],page=pdf.getPage(cfg.page),data=trim(),bytes=Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0)),sig=await pdf.embedPng(bytes),dims=sig.scale(1),scale=Math.min(cfg.signature.w/dims.width,cfg.signature.h/dims.height),w=dims.width*scale,h=dims.height*scale;page.drawImage(sig,{x:cfg.signature.x+(cfg.signature.w-w)/2,y:cfg.signature.y,w,h});const out=await pdf.save(),blob=new Blob([out],{type:'application/pdf'}),name=state.file.name.replace(/\.pdf$/i,'')+'-ausgefuellt.pdf';await upload(blob,name);const url=URL.createObjectURL(blob);$('download').href=url;$('download').download=name;show('done')}catch(e){$('signStatus').textContent=e.message||'PDF konnte nicht erstellt werden.'}finally{$('busy').classList.remove('show')}};
+$('again').onclick=()=>location.reload();
 })();
 </script>
 </body>
